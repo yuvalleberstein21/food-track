@@ -1,3 +1,4 @@
+import { USER_REGISTER_URL } from './../shared/constants/urls';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -6,6 +7,7 @@ import { USER_LOGIN_URL } from '../shared/constants/urls';
 import { IUserLogin } from '../shared/interfaces/IUserLogin';
 
 import { User } from '../shared/models/User';
+import { IUserRegister } from '../shared/interfaces/IUserRegiser';
 
 const USER_KEY = 'User';
 @Injectable({
@@ -37,6 +39,21 @@ export class UserService {
         },
         error: (errorResponse) => {
           this.toastrService.error(errorResponse.error, 'Login Failed');
+        },
+      })
+    );
+  }
+
+  register(userRegister: IUserRegister): Observable<User> {
+    return this.http.post<User>(USER_REGISTER_URL, userRegister).pipe(
+      tap({
+        next: (user) => {
+          this.setUserToLocalStorage(user);
+          this.userSubject.next(user);
+          alert(`Welcome to the Foodmine ${user.name}`);
+        },
+        error: (errorResponse) => {
+          alert(errorResponse.error);
         },
       })
     );
